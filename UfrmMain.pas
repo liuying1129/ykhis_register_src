@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, Buttons, ExtCtrls,IniFiles,StrUtils, Grids,
-  DBGrids, StdCtrls, DB, MemDS, DBAccess, MyAccess, dbcgrids, Mask, DBCtrls;
+  DBGrids, StdCtrls, DB, MemDS, DBAccess, MyAccess, dbcgrids, Mask, DBCtrls,
+  DosMove;
 
 //==为了通过发送消息更新主窗体状态栏而增加==//
 const
@@ -19,27 +20,34 @@ type
     StatusBar1: TStatusBar;
     CoolBar1: TCoolBar;
     ToolBar1: TToolBar;
-    SpeedButton1: TSpeedButton;
-    ToolButton1: TToolButton;
     TimerIdleTracker: TTimer;
     Panel1: TPanel;
     DBGrid2: TDBGrid;
-    LabeledEdit2: TLabeledEdit;
-    LabeledEdit3: TLabeledEdit;
-    LabeledEdit4: TLabeledEdit;
-    LabeledEdit5: TLabeledEdit;
-    DBGrid1: TDBGrid;
-    MyQuery1: TMyQuery;
-    DataSource1: TDataSource;
     BitBtn1: TBitBtn;
     DataSource2: TDataSource;
     MyQuery2: TMyQuery;
     DateTimePicker1: TDateTimePicker;
     Label1: TLabel;
+    LabeledEdit1: TLabeledEdit;
+    LabeledEdit6: TLabeledEdit;
+    LabeledEdit7: TLabeledEdit;
+    LabeledEdit8: TLabeledEdit;
+    BitBtn2: TBitBtn;
+    DosMove1: TDosMove;
+    ComboBox1: TComboBox;
+    Label2: TLabel;
+    ComboBox2: TComboBox;
+    Label3: TLabel;
+    ComboBox3: TComboBox;
+    Label4: TLabel;
+    ComboBox4: TComboBox;
+    Label5: TLabel;
     procedure FormShow(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure MyQuery2AfterOpen(DataSet: TDataSet);
+    procedure ComboBox3Change(Sender: TObject);
   private
     { Private declarations }
     //==为了通过发送消息更新主窗体状态栏而增加==//
@@ -64,9 +72,21 @@ uses UfrmLogin, UDM, superobject;
 
 {$R *.dfm}
 
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+  MyQuery2.Connection:=DM.MyConnection1;
+
+  DateTimePicker1.MinDate:=date();
+  DateTimePicker1.Date:=date();
+end;
+
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
   frmLogin.ShowModal;
+
+  LoadGroupName(ComboBox1,'select name from commcode where typename=''午别'' ');
+  LoadGroupName(ComboBox2,'select name from commcode where typename=''号别'' ');
+  LoadGroupName(ComboBox3,'select concat(''['',unid,'']'',name) from commcode where typename=''部门'' ');//加载部门
 
   UpdateMyQuery2;
 
@@ -137,55 +157,33 @@ begin
   message.Result:=-1;
 end;
 
-procedure TfrmMain.SpeedButton1Click(Sender: TObject);
-var
-  p1:PChar;
-  s1:String;
-  aJson:ISuperObject;
-  Unid_TreatMaster:integer;
-  patient_unid:String;
-begin
-  p1:=ShowPatientForm(Application.Handle,PChar(g_Server),g_Port,PChar(g_Database),PChar(g_Username),PChar(g_Password),PChar(operator_name),PChar(operator_dep_name));
-  s1:=StrPas(p1);
-
-  aJson:=SO(s1);
-
-  if not aJson.N['success'].AsBoolean then exit;
-
-  if aJson.N['method'].AsString='selected' then//表示双击病人
-  begin
-    patient_unid:=aJson.N['patient_unid'].AsString;
-
-    MyQuery1.Close;
-    MyQuery1.SQL.Clear;
-    MyQuery1.SQL.Text:='select * from patient_info '+
-                       ' where unid='+patient_unid;
-    MyQuery1.Open;
-  end;
-end;
-
-procedure TfrmMain.FormCreate(Sender: TObject);
-begin
-  MyQuery1.Connection:=DM.MyConnection1;
-  MyQuery2.Connection:=DM.MyConnection1;
-end;
-
 procedure TfrmMain.BitBtn1Click(Sender: TObject);
+var
+  Unid_TreatMaster:integer;
 begin
-  if not MyQuery1.Active then exit;
-  if MyQuery1.RecordCount<>1 then exit;
-  
-  InsertTreatMaster(MyQuery1.fieldbyname('unid').AsInteger);
+  if LabeledEdit8.Text='' then exit;//患者唯一编号为空
+  if LabeledEdit1.Text='' then exit;//患者姓名为空
+  if ComboBox4.Text='' then exit;//患者姓名为空
+
+  Unid_TreatMaster:=InsertTreatMaster(strtoint(LabeledEdit8.Text));
 
   MyQuery2.Refresh;
+  MyQuery2.Locate('unid',Unid_TreatMaster,[loCaseInsensitive]);
+
+  MESSAGEDLG('挂号完成!',mtInformation,[mbOK],0);
 end;
 
 procedure TfrmMain.UpdateMyQuery2;
 begin
   MyQuery2.Close;
   MyQuery2.SQL.Clear;
-  MyQuery2.SQL.Text:='select * from treat_master '+
-                     ' where register_src=''register'' and creat_date_time>curdate() order by creat_date_time';
+  MyQuery2.SQL.Text:='select register_treat_date as 看诊日期,operator as 医生,department as 科别,patient_name as 姓名,patient_sex as 性别,patient_age AS 年龄,'+
+                     'register_morning_afternoon as 午别,register_no_type as 号别,'+
+                     'certificate_type as 证件类型,certificate_num as 证件号码,'+
+                     'clinic_card_num as 诊疗卡号,health_care_num as 医保卡号,address as 住址,work_company as 工作单位,work_address as 工作地址,'+
+                     'if_marry as 婚否,native_place as 籍贯,telephone as 联系电话,remark as 备注,patient_unid,unid,creat_date_time,register_operator,audit_doctor,audit_date '+
+                     ' from treat_master '+
+                     ' where register_src=''register'' and register_treat_date>=curdate() order by register_treat_date,operator';
   MyQuery2.Open;
 end;
 
@@ -231,12 +229,12 @@ begin
   adotemp11.ParamByName('if_marry').Value:=adotemp22.fieldbyname('if_marry').AsString;
   adotemp11.ParamByName('native_place').Value:=adotemp22.fieldbyname('native_place').AsString;
   adotemp11.ParamByName('telephone').Value:=adotemp22.fieldbyname('telephone').AsString;
-  adotemp11.ParamByName('operator').Value:=LabeledEdit5.Text;
-  adotemp11.ParamByName('department').Value:=LabeledEdit4.Text;
+  adotemp11.ParamByName('operator').Value:=ComboBox4.Text;
+  adotemp11.ParamByName('department').Value:=ComboBox3.Text;
   adotemp11.ParamByName('register_src').Value:='register';
-  adotemp11.ParamByName('register_treat_date').Value:=DateTimePicker1.Date;
-  adotemp11.ParamByName('register_morning_afternoon').Value:=LabeledEdit2.Text;
-  adotemp11.ParamByName('register_no_type').Value:=LabeledEdit3.Text;
+  adotemp11.ParamByName('register_treat_date').Value:=DateTimePicker1.DateTime;//必须DateTime,Date则传入值为0000-00-00
+  adotemp11.ParamByName('register_morning_afternoon').Value:=ComboBox1.Text;
+  adotemp11.ParamByName('register_no_type').Value:=ComboBox2.Text;
   adotemp11.ParamByName('register_operator').Value:=operator_name;
   try
     adotemp11.ExecSQL;
@@ -254,6 +252,71 @@ begin
   adotemp11.Free;
 
   adotemp22.Free;
+end;
+
+procedure TfrmMain.BitBtn2Click(Sender: TObject);
+var
+  p1:PChar;
+  s1:String;
+  aJson:ISuperObject;
+  patient_unid:String;
+  adotemp11:TMyQuery;
+begin
+  p1:=ShowPatientForm(Application.Handle,PChar(g_Server),g_Port,PChar(g_Database),PChar(g_Username),PChar(g_Password),PChar(operator_name),PChar(operator_dep_name));
+  s1:=StrPas(p1);
+
+  aJson:=SO(s1);
+
+  if not aJson.N['success'].AsBoolean then exit;
+
+  if aJson.N['method'].AsString='selected' then//表示双击病人
+  begin
+    patient_unid:=aJson.N['patient_unid'].AsString;
+
+    adotemp11:=TMyQuery.Create(nil);
+    adotemp11.Connection:=DM.MyConnection1;
+    adotemp11.Close;
+    adotemp11.SQL.Clear;
+    adotemp11.SQL.Text:='select * from patient_info '+
+                       ' where unid='+patient_unid;
+    adotemp11.Open;
+
+    LabeledEdit1.Text:=adotemp11.fieldbyname('patient_name').AsString;
+    LabeledEdit6.Text:=adotemp11.fieldbyname('patient_sex').AsString;
+    LabeledEdit7.Text:=adotemp11.fieldbyname('patient_birthday').AsString;
+    LabeledEdit8.Text:=adotemp11.fieldbyname('unid').AsString;
+    adotemp11.Free;
+  end;
+end;
+
+procedure TfrmMain.MyQuery2AfterOpen(DataSet: TDataSet);
+begin
+  if not DataSet.Active then exit;
+
+  dbgrid2.Columns.Items[0].Width:=72;//看诊日期
+  dbgrid2.Columns.Items[1].Width:=42;//医生
+  dbgrid2.Columns.Items[2].Width:=42;//科别
+  dbgrid2.Columns.Items[3].Width:=42;//姓名
+  dbgrid2.Columns.Items[4].Width:=30;//性别
+  dbgrid2.Columns.Items[5].Width:=30;//年龄
+  dbgrid2.Columns.Items[6].Width:=30;//午别
+  dbgrid2.Columns.Items[7].Width:=42;//号别
+  dbgrid2.Columns.Items[8].Width:=55;//证件类型
+  dbgrid2.Columns.Items[9].Width:=130;//证件号码
+  dbgrid2.Columns.Items[10].Width:=130;//诊疗卡号
+  dbgrid2.Columns.Items[11].Width:=130;//医保卡号
+  dbgrid2.Columns.Items[12].Width:=120;//住址
+  dbgrid2.Columns.Items[13].Width:=120;//工作单位
+  dbgrid2.Columns.Items[14].Width:=120;//工作地址
+  dbgrid2.Columns.Items[15].Width:=42;//婚否
+  dbgrid2.Columns.Items[16].Width:=55;//籍贯
+  dbgrid2.Columns.Items[17].Width:=80;//联系电话
+  dbgrid2.Columns.Items[18].Width:=100;//备注
+end;
+
+procedure TfrmMain.ComboBox3Change(Sender: TObject);
+begin
+  LoadGroupName(ComboBox4,'select name from worker ');
 end;
 
 end.

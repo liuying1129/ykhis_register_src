@@ -1,8 +1,8 @@
 object frmMain: TfrmMain
   Left = 192
-  Top = 123
+  Top = 110
   Width = 870
-  Height = 524
+  Height = 555
   Caption = #25346#21495
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -10,6 +10,7 @@ object frmMain: TfrmMain
   Font.Height = -13
   Font.Name = #23435#20307
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   WindowState = wsMaximized
@@ -19,7 +20,7 @@ object frmMain: TfrmMain
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 466
+    Top = 497
     Width = 854
     Height = 19
     Panels = <
@@ -91,116 +92,163 @@ object frmMain: TfrmMain
       Height = 33
       Caption = 'ToolBar1'
       TabOrder = 0
-      object SpeedButton1: TSpeedButton
-        Left = 0
-        Top = 2
-        Width = 95
-        Height = 22
-        Caption = #36873#25321#24739#32773
-        OnClick = SpeedButton1Click
-      end
-      object ToolButton1: TToolButton
-        Left = 95
-        Top = 2
-        Width = 8
-        Caption = 'ToolButton1'
-        Style = tbsSeparator
-      end
     end
   end
   object Panel1: TPanel
     Left = 0
     Top = 37
-    Width = 385
-    Height = 429
+    Width = 161
+    Height = 460
     Align = alLeft
     TabOrder = 2
     object Label1: TLabel
-      Left = 160
-      Top = 224
+      Left = 16
+      Top = 208
       Width = 52
       Height = 13
       Caption = #30475#35786#26085#26399
     end
-    object LabeledEdit2: TLabeledEdit
-      Left = 24
-      Top = 288
-      Width = 121
-      Height = 21
-      EditLabel.Width = 26
-      EditLabel.Height = 13
-      EditLabel.Caption = #21320#21035
-      TabOrder = 0
+    object Label2: TLabel
+      Left = 16
+      Top = 250
+      Width = 26
+      Height = 13
+      Caption = #21320#21035
     end
-    object LabeledEdit3: TLabeledEdit
-      Left = 240
-      Top = 288
-      Width = 121
-      Height = 21
-      EditLabel.Width = 26
-      EditLabel.Height = 13
-      EditLabel.Caption = #21495#21035
-      TabOrder = 1
+    object Label3: TLabel
+      Left = 16
+      Top = 290
+      Width = 26
+      Height = 13
+      Caption = #21495#21035
     end
-    object LabeledEdit4: TLabeledEdit
-      Left = 24
-      Top = 344
-      Width = 121
-      Height = 21
-      EditLabel.Width = 26
-      EditLabel.Height = 13
-      EditLabel.Caption = #31185#23460
-      TabOrder = 2
+    object Label4: TLabel
+      Left = 16
+      Top = 330
+      Width = 26
+      Height = 13
+      Caption = #31185#23460
     end
-    object LabeledEdit5: TLabeledEdit
-      Left = 240
-      Top = 344
-      Width = 121
-      Height = 21
-      EditLabel.Width = 26
-      EditLabel.Height = 13
-      EditLabel.Caption = #21307#29983
-      TabOrder = 3
-    end
-    object DBGrid1: TDBGrid
-      Left = 1
-      Top = 1
-      Width = 383
-      Height = 120
-      Align = alTop
-      DataSource = DataSource1
-      ReadOnly = True
-      TabOrder = 4
-      TitleFont.Charset = ANSI_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -13
-      TitleFont.Name = #23435#20307
-      TitleFont.Style = []
+    object Label5: TLabel
+      Left = 16
+      Top = 370
+      Width = 26
+      Height = 13
+      Caption = #21307#29983
     end
     object BitBtn1: TBitBtn
-      Left = 168
-      Top = 392
-      Width = 75
+      Left = 16
+      Top = 424
+      Width = 121
       Height = 25
       Caption = #25346#21495
-      TabOrder = 5
+      TabOrder = 0
       OnClick = BitBtn1Click
     end
     object DateTimePicker1: TDateTimePicker
-      Left = 160
-      Top = 240
+      Left = 16
+      Top = 224
       Width = 100
       Height = 21
       Date = 44920.826685208330000000
       Time = 44920.826685208330000000
+      TabOrder = 1
+    end
+    object LabeledEdit1: TLabeledEdit
+      Left = 16
+      Top = 96
+      Width = 121
+      Height = 21
+      EditLabel.Width = 26
+      EditLabel.Height = 13
+      EditLabel.Caption = #22995#21517
+      Enabled = False
+      TabOrder = 2
+    end
+    object LabeledEdit6: TLabeledEdit
+      Left = 16
+      Top = 136
+      Width = 121
+      Height = 21
+      EditLabel.Width = 26
+      EditLabel.Height = 13
+      EditLabel.Caption = #24615#21035
+      Enabled = False
+      TabOrder = 3
+    end
+    object LabeledEdit7: TLabeledEdit
+      Left = 16
+      Top = 180
+      Width = 121
+      Height = 21
+      EditLabel.Width = 52
+      EditLabel.Height = 13
+      EditLabel.Caption = #20986#29983#26085#26399
+      Enabled = False
+      TabOrder = 4
+    end
+    object LabeledEdit8: TLabeledEdit
+      Left = 16
+      Top = 56
+      Width = 121
+      Height = 21
+      EditLabel.Width = 80
+      EditLabel.Height = 13
+      EditLabel.Caption = #24739#32773#20449#24687'UNID'
+      Enabled = False
+      TabOrder = 5
+    end
+    object BitBtn2: TBitBtn
+      Left = 16
+      Top = 8
+      Width = 121
+      Height = 25
+      Caption = #36873#25321#24739#32773
       TabOrder = 6
+      OnClick = BitBtn2Click
+    end
+    object ComboBox1: TComboBox
+      Left = 16
+      Top = 264
+      Width = 121
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 7
+    end
+    object ComboBox2: TComboBox
+      Left = 16
+      Top = 305
+      Width = 121
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 8
+    end
+    object ComboBox3: TComboBox
+      Left = 16
+      Top = 345
+      Width = 121
+      Height = 21
+      DropDownCount = 15
+      ItemHeight = 13
+      TabOrder = 9
+      OnChange = ComboBox3Change
+    end
+    object ComboBox4: TComboBox
+      Left = 16
+      Top = 385
+      Width = 121
+      Height = 21
+      DropDownCount = 20
+      ItemHeight = 13
+      TabOrder = 10
     end
   end
   object DBGrid2: TDBGrid
-    Left = 432
-    Top = 72
-    Width = 401
-    Height = 313
+    Left = 161
+    Top = 37
+    Width = 693
+    Height = 460
+    Align = alClient
     DataSource = DataSource2
     ReadOnly = True
     TabOrder = 3
@@ -216,22 +264,19 @@ object frmMain: TfrmMain
     Left = 553
     Top = 8
   end
-  object MyQuery1: TMyQuery
-    Left = 144
-    Top = 53
-  end
-  object DataSource1: TDataSource
-    DataSet = MyQuery1
-    Left = 112
-    Top = 53
-  end
   object DataSource2: TDataSource
     DataSet = MyQuery2
     Left = 456
     Top = 120
   end
   object MyQuery2: TMyQuery
+    AfterOpen = MyQuery2AfterOpen
     Left = 488
     Top = 120
+  end
+  object DosMove1: TDosMove
+    Active = True
+    Left = 585
+    Top = 8
   end
 end
