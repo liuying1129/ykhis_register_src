@@ -2,7 +2,7 @@ object frmMain: TfrmMain
   Left = 192
   Top = 123
   Width = 870
-  Height = 450
+  Height = 524
   Caption = #25346#21495
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -13,12 +13,13 @@ object frmMain: TfrmMain
   OldCreateOrder = False
   Position = poScreenCenter
   WindowState = wsMaximized
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 392
+    Top = 466
     Width = 854
     Height = 19
     Panels = <
@@ -96,6 +97,7 @@ object frmMain: TfrmMain
         Width = 95
         Height = 22
         Caption = #36873#25321#24739#32773
+        OnClick = SpeedButton1Click
       end
       object ToolButton1: TToolButton
         Left = 95
@@ -109,66 +111,98 @@ object frmMain: TfrmMain
   object Panel1: TPanel
     Left = 0
     Top = 37
-    Width = 185
-    Height = 355
+    Width = 385
+    Height = 429
     Align = alLeft
     TabOrder = 2
-    object LabeledEdit1: TLabeledEdit
-      Left = 48
-      Top = 40
-      Width = 121
-      Height = 21
-      EditLabel.Width = 52
-      EditLabel.Height = 13
-      EditLabel.Caption = #30475#35786#26085#26399
-      TabOrder = 0
+    object Label1: TLabel
+      Left = 160
+      Top = 224
+      Width = 52
+      Height = 13
+      Caption = #30475#35786#26085#26399
     end
     object LabeledEdit2: TLabeledEdit
-      Left = 48
-      Top = 88
+      Left = 24
+      Top = 288
       Width = 121
       Height = 21
       EditLabel.Width = 26
       EditLabel.Height = 13
       EditLabel.Caption = #21320#21035
-      TabOrder = 1
+      TabOrder = 0
     end
     object LabeledEdit3: TLabeledEdit
-      Left = 48
-      Top = 144
+      Left = 240
+      Top = 288
       Width = 121
       Height = 21
       EditLabel.Width = 26
       EditLabel.Height = 13
       EditLabel.Caption = #21495#21035
-      TabOrder = 2
+      TabOrder = 1
     end
     object LabeledEdit4: TLabeledEdit
-      Left = 48
-      Top = 192
+      Left = 24
+      Top = 344
       Width = 121
       Height = 21
       EditLabel.Width = 26
       EditLabel.Height = 13
       EditLabel.Caption = #31185#23460
-      TabOrder = 3
+      TabOrder = 2
     end
     object LabeledEdit5: TLabeledEdit
-      Left = 48
-      Top = 248
+      Left = 240
+      Top = 344
       Width = 121
       Height = 21
       EditLabel.Width = 26
       EditLabel.Height = 13
       EditLabel.Caption = #21307#29983
+      TabOrder = 3
+    end
+    object DBGrid1: TDBGrid
+      Left = 1
+      Top = 1
+      Width = 383
+      Height = 120
+      Align = alTop
+      DataSource = DataSource1
+      ReadOnly = True
       TabOrder = 4
+      TitleFont.Charset = ANSI_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -13
+      TitleFont.Name = #23435#20307
+      TitleFont.Style = []
+    end
+    object BitBtn1: TBitBtn
+      Left = 168
+      Top = 392
+      Width = 75
+      Height = 25
+      Caption = #25346#21495
+      TabOrder = 5
+      OnClick = BitBtn1Click
+    end
+    object DateTimePicker1: TDateTimePicker
+      Left = 160
+      Top = 240
+      Width = 100
+      Height = 21
+      Date = 44920.826685208330000000
+      Time = 44920.826685208330000000
+      TabOrder = 6
     end
   end
-  object DBGrid1: TDBGrid
-    Left = 200
-    Top = 64
-    Width = 409
-    Height = 233
+  object DBGrid2: TDBGrid
+    Left = 432
+    Top = 72
+    Width = 401
+    Height = 313
+    DataSource = DataSource2
+    ReadOnly = True
     TabOrder = 3
     TitleFont.Charset = ANSI_CHARSET
     TitleFont.Color = clWindowText
@@ -181,5 +215,23 @@ object frmMain: TfrmMain
     Interval = 2000
     Left = 553
     Top = 8
+  end
+  object MyQuery1: TMyQuery
+    Left = 144
+    Top = 53
+  end
+  object DataSource1: TDataSource
+    DataSet = MyQuery1
+    Left = 112
+    Top = 53
+  end
+  object DataSource2: TDataSource
+    DataSet = MyQuery2
+    Left = 456
+    Top = 120
+  end
+  object MyQuery2: TMyQuery
+    Left = 488
+    Top = 120
   end
 end

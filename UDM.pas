@@ -51,10 +51,11 @@ var
 procedure WriteLog(const ALogStr: Pchar);stdcall;external 'LYFunction.dll';
 function GetHDSn(const RootPath:pchar):pchar;stdcall;external 'LYFunction.dll';
 function TryStrToFloatExt(const pSourStr:Pchar; var Value: Double): Boolean;stdcall;external 'LYFunction.dll';
-function DeCryptStr(aStr: Pchar; aKey: Pchar): Pchar;stdcall;external 'DESCrypt.dll';//解密
-function EnCryptStr(aStr: Pchar; aKey: Pchar): Pchar;stdcall;external 'DESCrypt.dll';//加密
+function DeCryptStr(aStr: Pchar; aKey: Pchar): Pchar;stdcall;external 'LYFunction.dll';//解密
+function EnCryptStr(aStr: Pchar; aKey: Pchar): Pchar;stdcall;external 'LYFunction.dll';//加密
 function ShowOptionForm(const pCaption,pTabSheetCaption,pItemInfo,pInifile:Pchar):boolean;stdcall;external 'OptionSetForm.dll';
 function GetVersionLY(const AFileName:pchar):pchar;stdcall;external 'LYFunction.dll';
+function ShowPatientForm(AHandle:THandle;AServer:Pchar;APort:Integer;ADatabase:Pchar;AUsername:Pchar;APassword:Pchar;AOperator:Pchar;AOperatorDep:Pchar):PChar;stdcall;external 'SelPatient.dll';
   
 function MakeDBConn:boolean;
 function ExecSQLCmd(AServer:string;APort:integer;ADataBase:string;AUserName:string;APassword:string;ASQL:string):boolean;
