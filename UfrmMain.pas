@@ -59,6 +59,7 @@ type
     procedure ReadConfig;
     procedure UpdateMyQuery2;
     function InsertTreatMaster(const APatient_Unid:integer):integer;
+    procedure LoadDocListName;
   public
     { Public declarations }
   end;
@@ -87,6 +88,7 @@ begin
   LoadGroupName(ComboBox1,'select name from commcode where typename=''午别'' ');
   LoadGroupName(ComboBox2,'select name from commcode where typename=''号别'' ');
   LoadGroupName(ComboBox3,'select concat(''['',unid,'']'',name) from commcode where typename=''部门'' ');//加载部门
+  LoadDocListName;
 
   UpdateMyQuery2;
 
@@ -183,7 +185,7 @@ begin
                      'clinic_card_num as 诊疗卡号,health_care_num as 医保卡号,address as 住址,work_company as 工作单位,work_address as 工作地址,'+
                      'if_marry as 婚否,native_place as 籍贯,telephone as 联系电话,remark as 备注,patient_unid,unid,creat_date_time,register_operator,audit_doctor,audit_date '+
                      ' from treat_master '+
-                     ' where register_src=''register'' and register_treat_date>=curdate() order by register_treat_date,operator';
+                     ' where register_src=''register'' and register_treat_date>=curdate() order by register_treat_date,operator,register_morning_afternoon';
   MyQuery2.Open;
 end;
 
@@ -230,7 +232,7 @@ begin
   adotemp11.ParamByName('native_place').Value:=adotemp22.fieldbyname('native_place').AsString;
   adotemp11.ParamByName('telephone').Value:=adotemp22.fieldbyname('telephone').AsString;
   adotemp11.ParamByName('operator').Value:=ComboBox4.Text;
-  adotemp11.ParamByName('department').Value:=ComboBox3.Text;
+  adotemp11.ParamByName('department').Value:=copy(ComboBox3.Text,pos(']',ComboBox3.Text)+1,MaxInt);
   adotemp11.ParamByName('register_src').Value:='register';
   adotemp11.ParamByName('register_treat_date').Value:=DateTimePicker1.DateTime;//必须DateTime,Date则传入值为0000-00-00
   adotemp11.ParamByName('register_morning_afternoon').Value:=ComboBox1.Text;
@@ -316,7 +318,32 @@ end;
 
 procedure TfrmMain.ComboBox3Change(Sender: TObject);
 begin
-  LoadGroupName(ComboBox4,'select name from worker ');
+  LoadDocListName;
+end;
+
+procedure TfrmMain.LoadDocListName;
+var
+  s1,s2:string;
+  i,j:integer;
+begin
+  s1:=ComboBox3.Text;
+
+  if trim(s1)='' then
+  begin
+    LoadGroupName(ComboBox4,'select w.name from worker w LEFT join commcode cc on cc.TypeName=''部门'' and cc.unid=w.dep_unid ');
+    exit;
+  end;
+
+  i:=pos(']',s1);
+  s2:=copy(s1,2,i-2);
+
+  if not trystrtoint(s2,j) then
+  begin
+    MESSAGEDLG('部门解析出错!',mtError,[mbOK],0);
+    exit;
+  end;
+
+  LoadGroupName(ComboBox4,'select w.name from worker w LEFT join commcode cc on cc.TypeName=''部门'' and cc.unid=w.dep_unid where w.dep_unid='+s2);
 end;
 
 end.
