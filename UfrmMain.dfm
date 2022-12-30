@@ -250,6 +250,7 @@ object frmMain: TfrmMain
     Height = 460
     Align = alClient
     DataSource = DataSource2
+    PopupMenu = PopupMenu1
     ReadOnly = True
     TabOrder = 3
     TitleFont.Charset = ANSI_CHARSET
@@ -278,5 +279,21 @@ object frmMain: TfrmMain
     Active = True
     Left = 585
     Top = 8
+  end
+  object PopupMenu1: TPopupMenu
+    AutoHotkeys = maManual
+    Left = 520
+    Top = 120
+    object N1: TMenuItem
+      Caption = #21024#21495
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object N3: TMenuItem
+      Caption = #21047#26032
+      OnClick = N3Click
+    end
   end
 end

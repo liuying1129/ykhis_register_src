@@ -56,6 +56,7 @@ function EnCryptStr(aStr: Pchar; aKey: Pchar): Pchar;stdcall;external 'LYFunctio
 function ShowOptionForm(const pCaption,pTabSheetCaption,pItemInfo,pInifile:Pchar):boolean;stdcall;external 'OptionSetForm.dll';
 function GetVersionLY(const AFileName:pchar):pchar;stdcall;external 'LYFunction.dll';
 function ShowPatientForm(AHandle:THandle;AServer:Pchar;APort:Integer;ADatabase:Pchar;AUsername:Pchar;APassword:Pchar;AOperator:Pchar;AOperatorDep:Pchar):PChar;stdcall;external 'SelPatient.dll';
+function InsertTreatMaster(AServer:Pchar;APort:Integer;ADatabase:Pchar;AUsername:Pchar;APassword:Pchar;APatient_Unid:integer;AOperator:PChar;ADepartment:PChar;ARegister_Src:PChar;ARegister_Treat_Date:TDateTime;ARegister_Morning_Afternoon:PChar;ARegister_No_Type:PChar;ARegister_Operator:PChar):integer;stdcall;external 'SelPatient.dll';
   
 function MakeDBConn:boolean;
 function ExecSQLCmd(AServer:string;APort:integer;ADataBase:string;AUserName:string;APassword:string;ASQL:string):boolean;
@@ -155,7 +156,7 @@ begin
 
   Conn:=TMyConnection.Create(nil);
   Conn.LoginPrompt:=false;
-  Conn.Options.Charset:='gb2312';
+  Conn.Options.Charset:='gbk';
   Conn.Server:=AServer;
   Conn.Port:=APort;
   Conn.Database:=ADataBase;
@@ -188,7 +189,7 @@ begin
   Result:='';
   Conn:=TMyConnection.Create(nil);
   Conn.LoginPrompt:=false;
-  Conn.Options.Charset:='gb2312';
+  Conn.Options.Charset:='gbk';
   Conn.Server:=AServer;
   Conn.Port:=APort;
   Conn.Database:=ADataBase;

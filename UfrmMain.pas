@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, Buttons, ExtCtrls,IniFiles,StrUtils, Grids,
   DBGrids, StdCtrls, DB, MemDS, DBAccess, MyAccess, dbcgrids, Mask, DBCtrls,
-  DosMove;
+  DosMove, Menus;
 
 //==为了通过发送消息更新主窗体状态栏而增加==//
 const
@@ -42,12 +42,18 @@ type
     Label4: TLabel;
     ComboBox4: TComboBox;
     Label5: TLabel;
+    PopupMenu1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure MyQuery2AfterOpen(DataSet: TDataSet);
     procedure ComboBox3Change(Sender: TObject);
+    procedure N1Click(Sender: TObject);
+    procedure N3Click(Sender: TObject);
   private
     { Private declarations }
     //==为了通过发送消息更新主窗体状态栏而增加==//
@@ -58,7 +64,6 @@ type
     procedure ReadIni;
     procedure ReadConfig;
     procedure UpdateMyQuery2;
-    function InsertTreatMaster(const APatient_Unid:integer):integer;
     procedure LoadDocListName;
   public
     { Public declarations }
@@ -167,7 +172,7 @@ begin
   if LabeledEdit1.Text='' then exit;//患者姓名为空
   if ComboBox4.Text='' then exit;//患者姓名为空
 
-  Unid_TreatMaster:=InsertTreatMaster(strtoint(LabeledEdit8.Text));
+  Unid_TreatMaster:=InsertTreatMaster(PChar(g_Server),g_Port,PChar(g_Database),PChar(g_Username),PChar(g_Password),strtoint(LabeledEdit8.Text),PChar(ComboBox4.Text),PChar(copy(ComboBox3.Text,pos(']',ComboBox3.Text)+1,MaxInt)),'register',DateTimePicker1.DateTime,PChar(ComboBox1.Text),PChar(ComboBox2.Text),PChar(operator_name));
 
   MyQuery2.Refresh;
   MyQuery2.Locate('unid',Unid_TreatMaster,[loCaseInsensitive]);
@@ -187,73 +192,6 @@ begin
                      ' from treat_master '+
                      ' where register_src=''register'' and register_treat_date>=curdate() order by register_treat_date,operator,register_morning_afternoon';
   MyQuery2.Open;
-end;
-
-function TfrmMain.InsertTreatMaster(const APatient_Unid: integer): integer;
-var
-  adotemp11,adotemp22:TMyQuery;
-  sqlstr:string;
-begin
-  Result:=-1;
-  
-  adotemp22:=TMyQuery.Create(nil);
-  adotemp22.Connection:=DM.MyConnection1;
-  adotemp22.Close;
-  adotemp22.SQL.Clear;
-  adotemp22.SQL.Text:='select TIMESTAMPDIFF(YEAR,patient_birthday,CURDATE()) as patient_age,pi.* from patient_info pi where unid='+inttostr(APatient_Unid);
-  adotemp22.Open;
-  if adotemp22.RecordCount<>1 then begin adotemp22.Free;exit;end;
-
-  adotemp11:=TMyQuery.Create(nil);
-  adotemp11.Connection:=DM.MyConnection1;
-
-  sqlstr:='Insert into treat_master ('+
-                      ' patient_unid, patient_name, patient_sex, patient_age, certificate_type, certificate_num, clinic_card_num, health_care_num, address, work_company, work_address, if_marry, native_place, telephone, operator, department,'+
-                      ' register_src, register_treat_date, register_morning_afternoon, register_no_type, register_operator) values ('+
-                      ':patient_unid,:patient_name,:patient_sex,:patient_age,:certificate_type,:certificate_num,:clinic_card_num,:health_care_num,:address,:work_company,:work_address,:if_marry,:native_place,:telephone,:operator,:department,'+
-                      ':register_src,:register_treat_date,:register_morning_afternoon,:register_no_type,:register_operator) ';
-  adotemp11.Close;
-  adotemp11.SQL.Clear;
-  adotemp11.SQL.Add(sqlstr);
-  //执行多条MySQL语句，要用分号分隔
-  adotemp11.SQL.Add('; SELECT LAST_INSERT_ID() AS Insert_Identity ');
-  adotemp11.ParamByName('patient_unid').Value:=APatient_Unid;
-  adotemp11.ParamByName('patient_name').Value:=adotemp22.fieldbyname('patient_name').AsString;
-  adotemp11.ParamByName('patient_sex').Value:=adotemp22.fieldbyname('patient_sex').AsString;
-  adotemp11.ParamByName('patient_age').Value:=adotemp22.fieldbyname('patient_age').AsString;
-  adotemp11.ParamByName('certificate_type').Value:=adotemp22.fieldbyname('certificate_type').AsString;
-  adotemp11.ParamByName('certificate_num').Value:=adotemp22.fieldbyname('certificate_num').AsString;
-  adotemp11.ParamByName('clinic_card_num').Value:=adotemp22.fieldbyname('clinic_card_num').AsString;
-  adotemp11.ParamByName('health_care_num').Value:=adotemp22.fieldbyname('health_care_num').AsString;
-  adotemp11.ParamByName('address').Value:=adotemp22.fieldbyname('address').AsString;
-  adotemp11.ParamByName('work_company').Value:=adotemp22.fieldbyname('work_company').AsString;
-  adotemp11.ParamByName('work_address').Value:=adotemp22.fieldbyname('work_address').AsString;
-  adotemp11.ParamByName('if_marry').Value:=adotemp22.fieldbyname('if_marry').AsString;
-  adotemp11.ParamByName('native_place').Value:=adotemp22.fieldbyname('native_place').AsString;
-  adotemp11.ParamByName('telephone').Value:=adotemp22.fieldbyname('telephone').AsString;
-  adotemp11.ParamByName('operator').Value:=ComboBox4.Text;
-  adotemp11.ParamByName('department').Value:=copy(ComboBox3.Text,pos(']',ComboBox3.Text)+1,MaxInt);
-  adotemp11.ParamByName('register_src').Value:='register';
-  adotemp11.ParamByName('register_treat_date').Value:=DateTimePicker1.DateTime;//必须DateTime,Date则传入值为0000-00-00
-  adotemp11.ParamByName('register_morning_afternoon').Value:=ComboBox1.Text;
-  adotemp11.ParamByName('register_no_type').Value:=ComboBox2.Text;
-  adotemp11.ParamByName('register_operator').Value:=operator_name;
-  try
-    adotemp11.ExecSQL;
-  except
-    on E:Exception do
-    begin
-      adotemp11.Free;
-      adotemp22.Free;
-      MESSAGEDLG('挂号失败!'+E.Message,mtError,[mbOK],0);
-      exit;
-    end;
-  end;
-
-  Result:=adotemp11.fieldbyname('Insert_Identity').AsInteger;
-  adotemp11.Free;
-
-  adotemp22.Free;
 end;
 
 procedure TfrmMain.BitBtn2Click(Sender: TObject);
@@ -344,6 +282,27 @@ begin
   end;
 
   LoadGroupName(ComboBox4,'select w.name from worker w LEFT join commcode cc on cc.TypeName=''部门'' and cc.unid=w.dep_unid where w.dep_unid='+s2);
+end;
+
+procedure TfrmMain.N1Click(Sender: TObject);
+begin
+  if not MyQuery2.Active then exit;
+  if MyQuery2.RecordCount=0 then exit;
+
+  if '1'=ScalarSQLCmd(g_Server,g_Port,g_Database,g_Username,g_Password,'select 1 from treat_slave where tm_unid='+MyQuery2.fieldbyname('unid').AsString+' limit 1') then
+  begin
+    MESSAGEDLG('存在诊疗记录,不允许删号!',mtError,[mbOK],0);
+    exit;
+  end;
+
+  if (MessageDlg('确实要删除该挂号记录吗？',mtWarning,[mbYes,mbNo],0)<>mrYes) then exit;
+
+  MyQuery2.Delete;
+end;
+
+procedure TfrmMain.N3Click(Sender: TObject);
+begin
+  MyQuery2.Refresh;
 end;
 
 end.
