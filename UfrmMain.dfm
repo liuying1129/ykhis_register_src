@@ -270,7 +270,7 @@ object frmMain: TfrmMain
     Left = 456
     Top = 120
   end
-  object MyQuery2: TMyQuery
+  object MyQuery2: TUniQuery
     AfterOpen = MyQuery2AfterOpen
     Left = 488
     Top = 120

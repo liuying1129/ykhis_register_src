@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ToolWin, Buttons, ExtCtrls,IniFiles,StrUtils, Grids,
-  DBGrids, StdCtrls, DB, MemDS, DBAccess, MyAccess, dbcgrids, Mask, DBCtrls,
-  DosMove, Menus;
+  DBGrids, StdCtrls, DB, MemDS, DBAccess, dbcgrids, Mask, DBCtrls,
+  DosMove, Menus, Uni;
 
 //==为了通过发送消息更新主窗体状态栏而增加==//
 const
@@ -25,7 +25,7 @@ type
     DBGrid2: TDBGrid;
     BitBtn1: TBitBtn;
     DataSource2: TDataSource;
-    MyQuery2: TMyQuery;
+    MyQuery2: TUniQuery;
     DateTimePicker1: TDateTimePicker;
     Label1: TLabel;
     LabeledEdit1: TLabeledEdit;
@@ -119,7 +119,7 @@ var
   i:integer;
 begin
   //读系统代码
-  SCSYDW:=ScalarSQLCmd(g_Server,g_Port,g_Database,g_Username,g_Password,'select Name from commcode where TypeName=''系统代码'' and ReMark=''授权使用单位'' ');
+  SCSYDW:=ScalarSQLCmd(HisConn,'select Name from commcode where TypeName=''系统代码'' and ReMark=''授权使用单位'' ');
   if SCSYDW='' then SCSYDW:='2F3A054F64394BBBE3D81033FDE12313';//'未授权单位'加密后的字符串
   //======解密SCSYDW
   pInStr:=pchar(SCSYDW);
@@ -172,7 +172,7 @@ begin
   if LabeledEdit1.Text='' then exit;//患者姓名为空
   if ComboBox4.Text='' then exit;//患者姓名为空
 
-  Unid_TreatMaster:=InsertTreatMaster(PChar(g_Server),g_Port,PChar(g_Database),PChar(g_Username),PChar(g_Password),strtoint(LabeledEdit8.Text),PChar(ComboBox4.Text),PChar(copy(ComboBox3.Text,pos(']',ComboBox3.Text)+1,MaxInt)),'register',DateTimePicker1.DateTime,PChar(ComboBox1.Text),PChar(ComboBox2.Text),PChar(operator_name));
+  Unid_TreatMaster:=InsertTreatMaster(PChar(HisConn),strtoint(LabeledEdit8.Text),PChar(ComboBox4.Text),PChar(copy(ComboBox3.Text,pos(']',ComboBox3.Text)+1,MaxInt)),'register',DateTimePicker1.DateTime,PChar(ComboBox1.Text),PChar(ComboBox2.Text),PChar(operator_name));
 
   MyQuery2.Refresh;
   MyQuery2.Locate('unid',Unid_TreatMaster,[loCaseInsensitive]);
@@ -200,9 +200,9 @@ var
   s1:String;
   aJson:ISuperObject;
   patient_unid:String;
-  adotemp11:TMyQuery;
+  adotemp11:TUniQuery;
 begin
-  p1:=ShowPatientForm(Application.Handle,PChar(g_Server),g_Port,PChar(g_Database),PChar(g_Username),PChar(g_Password),PChar(operator_name),PChar(operator_dep_name));
+  p1:=ShowPatientForm(Application.Handle,PChar(HisConn),PChar(operator_name),PChar(operator_dep_name));
   s1:=StrPas(p1);
 
   aJson:=SO(s1);
@@ -213,7 +213,7 @@ begin
   begin
     patient_unid:=aJson.N['patient_unid'].AsString;
 
-    adotemp11:=TMyQuery.Create(nil);
+    adotemp11:=TUniQuery.Create(nil);
     adotemp11.Connection:=DM.MyConnection1;
     adotemp11.Close;
     adotemp11.SQL.Clear;
@@ -289,7 +289,7 @@ begin
   if not MyQuery2.Active then exit;
   if MyQuery2.RecordCount=0 then exit;
 
-  if '1'=ScalarSQLCmd(g_Server,g_Port,g_Database,g_Username,g_Password,'select 1 from treat_slave where tm_unid='+MyQuery2.fieldbyname('unid').AsString+' limit 1') then
+  if '1'=ScalarSQLCmd(HisConn,'select 1 from treat_slave where tm_unid='+MyQuery2.fieldbyname('unid').AsString+' limit 1') then
   begin
     MESSAGEDLG('存在诊疗记录,不允许删号!',mtError,[mbOK],0);
     exit;
